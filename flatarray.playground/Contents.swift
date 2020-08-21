@@ -5,6 +5,7 @@ func flatRecursive(obj: Any) -> [Int] {
     
     var result: [Int] = []
     
+    // Base case
     if let objInt = obj as? Int {
         result.append(objInt)
         return result
@@ -25,13 +26,16 @@ func flatIterative(obj: Any) -> [Int] {
     
     if var array = obj as? Array<Any> {
         while array.count > 0 {
+            
             let first = array[0]
             
+            // in case of a single Integer, insert directly in result array
             if let int = first as? Int {
                 result.append(int)
                 array.removeFirst()
             }
             
+            // Replace first element with array detected
             if let arr = first as? Array<Any> {
                 array.replaceSubrange(Range(NSRange(location: 0, length: 1))!, with: arr)
             }
