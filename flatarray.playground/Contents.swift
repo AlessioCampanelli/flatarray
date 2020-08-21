@@ -3,56 +3,100 @@ import XCTest
 
 func flatRecursive(obj: Any) -> [Int] {
     
-    var res: [Int] = []
+    var result: [Int] = []
     
     if let objInt = obj as? Int {
-        res.append(objInt)
-        return res
+        result.append(objInt)
+        return result
     }
     
     if let obj = obj as? Array<Any> {
         for x in obj {
-           res += flatRecursive(obj: x)
+           result += flatRecursive(obj: x)
         }
     }
     
-    return res
+    return result
 }
 
-let integersRecursive = flatRecursive(obj: [[1,2,[3]],4])
-print(integersRecursive)
+func flatIterative(obj: Any) -> [Int] {
+   
+    var result: Array<Int> = []
+    
+    if var array = obj as? Array<Any> {
+        while array.count > 0 {
+            let first = array[0]
+            
+            if let int = first as? Int {
+                result.append(int)
+                array.removeFirst()
+            }
+            
+            if let arr = first as? Array<Any> {
+                array.replaceSubrange(Range(NSRange(location: 0, length: 1))!, with: arr)
+            }
+        }
+    }
+    return result
+}
 
-class FlatArrayCase: XCTestCase {
+// MARK: - Test
+
+class FlatRecursiveArrayCase: XCTestCase {
     
     func testNestedArray1() {
-        print("\n==== Array [[1,2,[3]],4] --> [1,2,3,4] ====\n")
         let result = flatRecursive(obj: [[1,2,[3]],4])
         XCTAssertTrue(result == [1,2,3,4])
     }
     
     func testNestedArray2() {
-        print("\n==== Array [[[1,2],[3]],4] --> [1,2,3,4] ====\n")
         let result = flatRecursive(obj: [[[1,2],[3]],4])
         XCTAssertTrue(result == [1,2,3,4])
     }
     
     func testNestedArray3() {
-        print("\n==== Array [1,[2,3,[4]]] --> [1,2,3,4] ====\n")
         let result = flatRecursive(obj: [1,[2,3,[4]]])
         XCTAssertTrue(result == [1,2,3,4])
     }
     
     func testNestedArray4() {
-        print("\n==== Array [[1,2,[]],4] --> [1,2,3,4] ====\n")
         let result = flatRecursive(obj: [[1,[],2],4])
         XCTAssertTrue(result == [1,2,4])
     }
     
     func testEmptyArray() {
-        print("\n==== Empty Array [] --> [] ====\n]")
         let result = flatRecursive(obj: [])
         XCTAssertTrue(result == [])
     }
 }
 
-FlatArrayCase.defaultTestSuite.run()
+class FlatIterativeArrayCase: XCTestCase {
+    
+    func testNestedArray1() {
+        let result = flatIterative(obj: [[1,2,[3]],4])
+        XCTAssertTrue(result == [1,2,3,4])
+    }
+    
+    func testNestedArray2() {
+        let result = flatIterative(obj: [[[1,2],[3]],4])
+        XCTAssertTrue(result == [1,2,3,4])
+    }
+    
+    func testNestedArray3() {
+        let result = flatIterative(obj: [1,[2,3,[4]]])
+        XCTAssertTrue(result == [1,2,3,4])
+    }
+    
+    func testNestedArray4() {
+        let result = flatIterative(obj: [[1,[],2],4])
+        XCTAssertTrue(result == [1,2,4])
+    }
+    
+    func testEmptyArray() {
+        let result = flatIterative(obj: [])
+        XCTAssertTrue(result == [])
+    }
+}
+
+FlatRecursiveArrayCase.defaultTestSuite.run()
+FlatIterativeArrayCase.defaultTestSuite.run()
